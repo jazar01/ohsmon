@@ -27,6 +27,7 @@ namespace ohsmon
             catch (IOException e)
             {
                 Console.WriteLine("ERROR - " + e.Message);
+                return false;
             }
           
             return true;
