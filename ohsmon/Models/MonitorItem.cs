@@ -76,6 +76,8 @@ namespace ohsmon.Models
             }
             if (valid)
                 _msg = "VALID";
+            else
+                _msg = "ERROR - " + _msg;
 
             return valid;
         }

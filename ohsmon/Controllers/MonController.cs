@@ -15,10 +15,21 @@ namespace ohsmon.Controllers
     [Route("api/[controller]")]
     public class MonController : Controller
     {
+        /// <summary>
+        /// Post/Create creates a new monitor item and records it
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="monitorItem"></param>
+        /// <returns></returns>
+        [HttpPost("{version}")]
+        public IActionResult Create(string version, [FromBody] MonitorItem monitorItem)
+        {
+            return RecordMonitorItem(version, monitorItem);
+        }
         [HttpGet]
         public IActionResult GetTest()
         {
-            return new ObjectResult("TEST RETURN DATA");
+            return new ObjectResult("ERROR - API version must be specified");
         }
 
         // http://localhost:60695/api/mon/V1?id=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
@@ -35,13 +46,24 @@ namespace ohsmon.Controllers
             monitorItem.ResponseTime = ResponseTime;
             monitorItem.Memo = Memo;
 
+            return RecordMonitorItem(version, monitorItem);
+        }
+
+        /// <summary>
+        /// Checks for valid request, then records the new monitor item
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="monitorItem"></param>
+        /// <returns></returns>
+        private static IActionResult RecordMonitorItem(string version, MonitorItem monitorItem)
+        {
             if (version.ToUpper() == "V1")
             {
                 if (monitorItem.IsValid())
                 {
                     DataRecorder r = new DataRecorder(@"c:\temp\mondata.log");
                     r.AppendData(monitorItem.ToCSV());
-                    Console.WriteLine(monitorItem.ToCSV());
+                    Console.WriteLine(monitorItem.ToString());
                     return new ObjectResult(monitorItem.ToString());
                 }
                 else
@@ -51,13 +73,7 @@ namespace ohsmon.Controllers
                 return new ObjectResult("ERROR - Version not supported");
         }
 
-        // POST api/<controller>
-        [HttpPost]
-        public void Create([FromBody]string value)
-        {
-            string testval = value;
-            return;
-        }
+
 
        
 
