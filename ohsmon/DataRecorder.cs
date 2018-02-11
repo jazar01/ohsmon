@@ -6,6 +6,9 @@ using System.IO;
 
 namespace ohsmon
 {
+    /// <summary>
+    /// Records monitor events to persistent storage
+    /// </summary>
     public class DataRecorder
     {
         private string _filename;
