@@ -14,10 +14,10 @@ namespace ohsmon.Models
     /// </summary>
     public class MonitorItem
     {
-        [Required]
+        [Key]
         public string ClientID { get; set; }
-        public string Date { get; }
-        public string Time { get;  }
+        public string Date { get; set; }
+        public string Time { get; set; }
         public string Type { get; set; }
         public string ResponseTime { get; set; }
         public string Memo { get; set; }
@@ -86,7 +86,7 @@ namespace ohsmon.Models
         /// call this after IsValid if false to get error message
         /// </summary>
         /// <returns>message</returns>
-        public string getMsg()
+        public string GetMsg()
         {
             return _msg;
         }

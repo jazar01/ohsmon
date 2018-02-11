@@ -15,6 +15,23 @@ namespace ohsmon.Controllers
     [Route("api/[controller]")]
     public class MonController : Controller
     {
+        private readonly MonitorContext _context;
+        public MonController(MonitorContext context)
+        {
+            _context = context;
+
+            if (_context.MonitorItems.Count()==0)
+            {
+                _context.MonitorItems.Add(new MonitorItem { ClientID = "INIT ENTRY" });
+                _context.SaveChanges();
+            }
+
+        }
+
+
+
+
+
         /// <summary>
         /// Post/Create creates a new monitor item and records it
         /// </summary>
@@ -25,6 +42,7 @@ namespace ohsmon.Controllers
         public IActionResult Create(string version, [FromBody] MonitorItem monitorItem)
         {
             return RecordMonitorItem(version, monitorItem);
+            
         }
         [HttpGet]
         public IActionResult GetTest()
@@ -40,11 +58,13 @@ namespace ohsmon.Controllers
             [FromQuery] string ResponseTime, 
             [FromQuery] string Memo)
         {
-            MonitorItem monitorItem = new Models.MonitorItem();
-            monitorItem.ClientID = ID;
-            monitorItem.Type = Type;
-            monitorItem.ResponseTime = ResponseTime;
-            monitorItem.Memo = Memo;
+            MonitorItem monitorItem = new Models.MonitorItem
+            {
+                ClientID = ID,
+                Type = Type,
+                ResponseTime = ResponseTime,
+                Memo = Memo
+            };
 
             return RecordMonitorItem(version, monitorItem);
         }
@@ -55,19 +75,21 @@ namespace ohsmon.Controllers
         /// <param name="version"></param>
         /// <param name="monitorItem"></param>
         /// <returns></returns>
-        private static IActionResult RecordMonitorItem(string version, MonitorItem monitorItem)
+        private IActionResult RecordMonitorItem(string version, MonitorItem monitorItem)
         {
             if (version.ToUpper() == "V1")
             {
                 if (monitorItem.IsValid())
                 {
-                    DataRecorder r = new DataRecorder(@"c:\temp\mondata.log");
-                    r.AppendData(monitorItem.ToCSV());
+                    // FileDataStor fds = new FileDataStor(@"c:\temp\mondata.log");  //TODO hard coded filename for testing
+                    // fds.AppendData(monitorItem.ToCSV());
+                    _context.MonitorItems.Add(monitorItem);
+                    _context.SaveChanges();
                     Console.WriteLine(monitorItem.ToString());
                     return new ObjectResult(monitorItem.ToString());
                 }
                 else
-                    return new ObjectResult(monitorItem.getMsg());
+                    return new ObjectResult(monitorItem.GetMsg());
             }
             else
                 return new ObjectResult("ERROR - Version not supported");

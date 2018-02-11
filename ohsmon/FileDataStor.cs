@@ -7,12 +7,12 @@ using System.IO;
 namespace ohsmon
 {
     /// <summary>
-    /// Records monitor events to persistent storage
+    /// Records monitor events to a flat file
     /// </summary>
-    public class DataRecorder
+    public class FileDataStor
     {
         private string _filename;
-        public DataRecorder(string filename)
+        public FileDataStor(string filename)
         {
             _filename = filename;
         }
