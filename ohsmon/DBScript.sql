@@ -1,4 +1,7 @@
-﻿-- Database: ohsmonitor
+﻿
+-- PostgresSQL
+
+-- Database: ohsmonitor
 
 -- DROP DATABASE ohsmonitor;
 

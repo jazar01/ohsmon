@@ -53,12 +53,14 @@ namespace ohsmon
  *           "ohsmondb": "User ID=monroot;Password=1234;Host=localhost;Port=5432;Database=ohsmonitor;Pooling=true;"
  *     }
  *  
+ *  Create inital databaes using EF Migration
+ *  
  *  Edit csproj file  (otherwise you will get "dotnet-ef" not found msg.
  *  USE THIS
  *     <DotNetCliToolReference Include = "Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
  *  NOT THIS
  *     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
- *  
+ * 
  *  Powershell from same dir as csproj file
  *      dotnet ef migrations add IntialMigration
  *      dotnet ef database update
@@ -67,5 +69,7 @@ namespace ohsmon
  *  
  *  Useful 11 min video   https://www.youtube.com/watch?v=md20lQut9EE
  *  
+ *  Use of Dotnet EF migration commands https://benjii.me/2016/05/dotnet-ef-migrations-for-asp-net-core/
+ *  
  */
- 
+
