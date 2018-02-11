@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using ohsmon.Models;
 using System;
@@ -10,8 +11,8 @@ using System;
 namespace ohsmon.Migrations
 {
     [DbContext(typeof(MonitorContext))]
-    [Migration("20180211193313_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20180211222854_Migration1")]
+    partial class Migration1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,9 +26,14 @@ namespace ohsmon.Migrations
                     b.Property<string>("ClientID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("Date");
+
                     b.Property<string>("Memo");
 
-                    b.Property<string>("ResponseTime");
+                    b.Property<long>("ResponseTime");
+
+                    b.Property<TimeSpan>("Time");
 
                     b.Property<string>("Type");
 

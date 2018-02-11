@@ -29,44 +29,71 @@ namespace ohsmon.Controllers
         }
 
 
+        // Note: monitor items can be submitted via GET or POST
 
 
-
-        /// <summary>
-        /// Post/Create creates a new monitor item and records it
-        /// </summary>
-        /// <param name="version"></param>
-        /// <param name="monitorItem"></param>
-        /// <returns></returns>
-        [HttpPost("{version}")]
+    /// <summary>
+    /// HTTP Post request to create a monitor item and record it
+    ///     Data must be in body of request 
+    ///     
+    ///     example ( ClientID and ResponseTime are required)
+    ///     
+    ///    	{
+	///     "ClientID":"Client1",
+    ///     "Type":"ALM",
+	///     "ResponseTime":210,
+	///     "Memo":"Test memo data"
+	///     }
+    /// </summary>
+    /// <param name="version"></param>
+    /// <param name="monitorItem"></param>
+    /// <returns></returns>
+    [HttpPost("{version}")]
         public IActionResult Create(string version, [FromBody] MonitorItem monitorItem)
         {
-            return RecordMonitorItem(version, monitorItem);
-            
+            return RecordMonitorItem(version, monitorItem);   
         }
+
+
+        // GET with no version is not allowed
         [HttpGet]
         public IActionResult GetTest()
         {
             return new ObjectResult("ERROR - API version must be specified");
         }
 
+        /// <summary>
+        /// HTTP GET request to add a monitor item to persistent storage
+        /// </summary>
+        /// <param name="version">V#</param>
+        /// <param name="ID">ClientID</param>
+        /// <param name="Type">Item type</param>
+        /// <param name="ResponseTime">milliseconds</param>
+        /// <param name="Memo"></param>
+        /// <returns></returns>
         // http://localhost:60695/api/mon/V1?id=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
         [HttpGet("{version}")]
-        public IActionResult GetMonData(string version, 
-            [FromQuery] string ID, 
-            [FromQuery] string Type, 
-            [FromQuery] string ResponseTime, 
+        public IActionResult GetMonData(string version,
+            [FromQuery] string ID,
+            [FromQuery] string Type,
+            [FromQuery] string ResponseTime,
             [FromQuery] string Memo)
         {
-            MonitorItem monitorItem = new Models.MonitorItem
+            if (long.TryParse(ResponseTime, out long rtime))
             {
-                ClientID = ID,
-                Type = Type,
-                ResponseTime = ResponseTime,
-                Memo = Memo
-            };
-
-            return RecordMonitorItem(version, monitorItem);
+                MonitorItem monitorItem = new Models.MonitorItem
+                {
+                    ClientID = ID,
+                    Type = Type,
+                    ResponseTime = rtime,
+                    Memo = Memo
+                };
+                return RecordMonitorItem(version, monitorItem);
+            }
+            else
+            {
+                throw (new ArgumentException("Reponse time must be a positive number of milliseconds", "ResponseTime"));
+            }   
         }
 
         /// <summary>
@@ -81,10 +108,14 @@ namespace ohsmon.Controllers
             {
                 if (monitorItem.IsValid())
                 {
+                    // * log to flat CSV file *
                     // FileDataStor fds = new FileDataStor(@"c:\temp\mondata.log");  //TODO hard coded filename for testing
                     // fds.AppendData(monitorItem.ToCSV());
+                    // * log to database
                     _context.MonitorItems.Add(monitorItem);
                     _context.SaveChanges();
+
+                    // * write to console 
                     Console.WriteLine(monitorItem.ToString());
                     return new ObjectResult(monitorItem.ToString());
                 }
@@ -94,11 +125,6 @@ namespace ohsmon.Controllers
             else
                 return new ObjectResult("ERROR - Version not supported");
         }
-
-
-
-       
-
       
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using ohsmon.Models;
 using System;
@@ -24,13 +25,14 @@ namespace ohsmon.Migrations
                     b.Property<string>("ClientID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("Date");
 
                     b.Property<string>("Memo");
 
-                    b.Property<string>("ResponseTime");
+                    b.Property<long>("ResponseTime");
 
-                    b.Property<string>("Time");
+                    b.Property<TimeSpan>("Time");
 
                     b.Property<string>("Type");
 
