@@ -1,0 +1,31 @@
+
+
+API
+
+To create a new monitor entry via HTTP GET  (URL not yet defined)
+
+	https://ohsmon.orasi.com/api/mon/V1?id=Client1&Type=ALM&ResponseTime=400&Memo=test
+
+To create a new monitor entry via HTTP POST
+
+	https://ohsmon.orasi.com/api/mon/V1/
+
+	request body contents
+	
+	{
+	"ClientID":"ClientABC",
+    
+		"Type":"ALM",
+	
+		"ResponseTime":410,
+	
+		"Memo":"Test Memo 2"
+	
+	}
+
+To retrieve data using HTTP GET  (not yet implemented)
+
+	https://ohsmon.orasi.com/api/data/V1?id=<clientID>&Type=<type>
+
+http://container-solutions.com/argument-rest-microservices/
+

@@ -28,6 +28,12 @@ namespace ohsmon
             services.AddEntityFrameworkNpgsql().AddDbContext<MonitorContext>(opt => 
                 opt.UseNpgsql(Configuration.GetConnectionString("ohsmondb")));
             services.AddMvc();
+            services.Configure<IISOptions>(options =>
+            {
+                options.AutomaticAuthentication = true;
+                options.AuthenticationDisplayName = null;
+                options.ForwardClientCertificate = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
