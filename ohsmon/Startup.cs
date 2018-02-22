@@ -77,5 +77,7 @@ namespace ohsmon
  *  
  *  Use of Dotnet EF migration commands https://benjii.me/2016/05/dotnet-ef-migrations-for-asp-net-core/
  *  
+ *  * there is a dbscript.sql file that contains the database script commands that can be used
+ *  * instead of the EF migration to create the DB
  */
 

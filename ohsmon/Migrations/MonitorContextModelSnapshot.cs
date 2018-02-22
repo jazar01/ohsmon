@@ -22,21 +22,23 @@ namespace ohsmon.Migrations
 
             modelBuilder.Entity("ohsmon.Models.MonitorItem", b =>
                 {
-                    b.Property<string>("ClientID")
+                    b.Property<int>("RecordID")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClientID");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("Date");
 
                     b.Property<string>("Memo");
 
-                    b.Property<long>("ResponseTime");
+                    b.Property<uint>("ResponseTime");
 
                     b.Property<TimeSpan>("Time");
 
                     b.Property<string>("Type");
 
-                    b.HasKey("ClientID");
+                    b.HasKey("RecordID");
 
                     b.ToTable("MonitorItems");
                 });

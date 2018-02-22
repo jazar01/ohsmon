@@ -16,12 +16,14 @@ namespace ohsmon.Models
     public class MonitorItem
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int RecordID { get; set; }
         public string ClientID { get; set; }
         [Column(TypeName="Date")]
         public DateTime Date { get; set; }
         public TimeSpan Time { get; set; }
         public string Type { get; set; }
-        public long ResponseTime { get; set; }
+        public uint ResponseTime { get; set; }
         public string Memo { get; set; }
 
         private string _msg;

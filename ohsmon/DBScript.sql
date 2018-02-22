@@ -1,10 +1,21 @@
-﻿
--- PostgresSQL
+-- Postgres SQL 10
+-- from command prompt:
+--   psql -U Postgres -f c:\data\projects\ohsmon\ohsmon\dbscript.sql
+--      note: user Postgres password was set at installation.  JRA used "Orasi"
+\c ohsmonitor
 
--- Database: ohsmonitor
-
+-- DROP TABLE public."MonitorItems";
+-- \c postgres
 -- DROP DATABASE ohsmonitor;
+-- DROP USER monroot;
 
+CREATE USER monroot WITH
+  LOGIN
+  SUPERUSER
+  INHERIT
+  CREATEDB
+  CREATEROLE
+  REPLICATION;
 CREATE DATABASE ohsmonitor
     WITH 
     OWNER = monroot
@@ -13,20 +24,17 @@ CREATE DATABASE ohsmonitor
     LC_CTYPE = 'English_United States.1252'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
-
--- Table: public."MonitorItems"
-
--- DROP TABLE public."MonitorItems";
-
+\c xohsmonitor
 CREATE TABLE public."MonitorItems"
 (
-    "ClientID" text COLLATE pg_catalog."default" NOT NULL,
+    "RecordID" integer NOT NULL DEFAULT nextval('"MonitorItems_RecordID_seq"'::regclass),
+    "ClientID" text COLLATE pg_catalog."default",
     "Date" date NOT NULL,
     "Memo" text COLLATE pg_catalog."default",
-    "ResponseTime" bigint NOT NULL,
+    "ResponseTime" oid NOT NULL,
     "Time" interval NOT NULL,
     "Type" text COLLATE pg_catalog."default",
-    CONSTRAINT "PK_MonitorItems" PRIMARY KEY ("ClientID")
+    CONSTRAINT "PK_MonitorItems" PRIMARY KEY ("RecordID")
 )
 WITH (
     OIDS = FALSE

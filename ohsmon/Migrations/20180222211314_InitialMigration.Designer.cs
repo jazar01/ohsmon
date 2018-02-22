@@ -11,8 +11,8 @@ using System;
 namespace ohsmon.Migrations
 {
     [DbContext(typeof(MonitorContext))]
-    [Migration("20180211222854_Migration1")]
-    partial class Migration1
+    [Migration("20180222211314_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,21 +23,23 @@ namespace ohsmon.Migrations
 
             modelBuilder.Entity("ohsmon.Models.MonitorItem", b =>
                 {
-                    b.Property<string>("ClientID")
+                    b.Property<int>("RecordID")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClientID");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("Date");
 
                     b.Property<string>("Memo");
 
-                    b.Property<long>("ResponseTime");
+                    b.Property<uint>("ResponseTime");
 
                     b.Property<TimeSpan>("Time");
 
                     b.Property<string>("Type");
 
-                    b.HasKey("ClientID");
+                    b.HasKey("RecordID");
 
                     b.ToTable("MonitorItems");
                 });

@@ -64,26 +64,27 @@ namespace ohsmon.Controllers
 
         /// <summary>
         /// HTTP GET request to add a monitor item to persistent storage
+        /// Record Monitor Data
         /// </summary>
         /// <param name="version">V#</param>
-        /// <param name="ID">ClientID</param>
+        /// <param name="ClientID">ClientID</param>
         /// <param name="Type">Item type</param>
         /// <param name="ResponseTime">milliseconds</param>
         /// <param name="Memo"></param>
         /// <returns></returns>
-        // http://localhost:60695/api/mon/V1?id=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
-        [HttpGet("{version}")]
-        public IActionResult GetMonData(string version,
-            [FromQuery] string ID,
+        // http://localhost:60695/api/mon/V1/record?clientid=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
+        [HttpGet("{version}/record")]
+        public IActionResult RecMonData(string version,
+            [FromQuery] string ClientID,
             [FromQuery] string Type,
             [FromQuery] string ResponseTime,
             [FromQuery] string Memo)
         {
-            if (long.TryParse(ResponseTime, out long rtime))
+            if (uint.TryParse(ResponseTime, out uint rtime))
             {
                 MonitorItem monitorItem = new Models.MonitorItem
                 {
-                    ClientID = ID,
+                    ClientID = ClientID,
                     Type = Type,
                     ResponseTime = rtime,
                     Memo = Memo
@@ -96,6 +97,47 @@ namespace ohsmon.Controllers
             }   
         }
 
+        /// <summary>
+        /// HTTP GET request to retreive previously recorded data
+        /// </summary>
+        /// <param name="version">V#</param>
+        /// <param name="ClientID">ClientID</param>
+        /// <param name="Type">Item type</param>
+        /// <param name="ResponseTime">milliseconds</param>
+        /// <param name="Memo"></param>
+        /// <returns></returns>
+        // http://localhost:60695/api/mon/V1?clientid=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
+        [HttpGet("{version}")]
+        public IActionResult GetMonData(string version,
+            [FromQuery] string ClientID,
+            [FromQuery] string Type,
+            [FromQuery] string ResponseTime,
+            [FromQuery] string Memo)
+        {
+
+            if (!Request.QueryString.HasValue)
+            {
+                // gets all records
+                var item = _context.MonitorItems.ToList();
+                return new ObjectResult(item);
+            }
+            else
+            {
+                // example of query on ClientID and Type
+                using (_context)
+                {
+                    var item = (from cid in _context.MonitorItems
+                                where cid.ClientID.Equals(ClientID)
+                                select cid)
+                               .Intersect
+                               (from type in _context.MonitorItems
+                                where type.Type.Equals(Type)
+                                select type);
+
+                    return new ObjectResult(item.ToList());
+                }
+            }
+        }
         /// <summary>
         /// Checks for valid request, then records the new monitor item
         /// </summary>
