@@ -55,12 +55,7 @@ namespace ohsmon.Controllers
         }
 
 
-        // GET with no version is not allowed
-        [HttpGet]
-        public IActionResult GetTest()
-        {
-            return new ObjectResult("ERROR - API version must be specified");
-        }
+
 
         /// <summary>
         /// HTTP GET request to add a monitor item to persistent storage
@@ -98,47 +93,90 @@ namespace ohsmon.Controllers
             }   
         }
 
+
+
+        // GET with no version or parameters returns last 100 records
+        [HttpGet]
+        public IActionResult GetTest()
+        {
+            IQueryable<MonitorItem> items = _context.MonitorItems;
+            items = items.OrderByDescending(item => item.Date).ThenByDescending(item => item.Time);
+            items = items.Take(100); 
+            return new ObjectResult(items.ToList());
+        }
+
+
         /// <summary>
-        /// HTTP GET request to retreive previously recorded data
+        /// HttpGet returns records matchng parameters
         /// </summary>
         /// <param name="version">V#</param>
         /// <param name="ClientID">ClientID</param>
-        /// <param name="Type">Item type</param>
-        /// <param name="ResponseTime">milliseconds</param>
-        /// <param name="Memo"></param>
+        /// <param name="Type">Type</param>
+        /// <param name="Memo">records wich contain memo</param>
+        /// <param name="Days">days of records</param>
+        /// <param name="Records">number of records</param>
         /// <returns></returns>
-        // http://localhost:60695/api/mon/V1?clientid=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
+        // http://localhost:60695/api/mon/V1?clientid=Client1&Type=ALM&Memo=test&days=10&records=100
         [HttpGet("{version}")]
         public IActionResult GetMonData(string version,
             [FromQuery] string ClientID,
             [FromQuery] string Type,
-            [FromQuery] string ResponseTime,
-            [FromQuery] string Memo)
+            [FromQuery] string Memo,
+            [FromQuery] string Days,
+            [FromQuery] string Records)
         {
+            int records = 5000;   // default number of records to fetch
 
-            if (!Request.QueryString.HasValue)
+            IQueryable<MonitorItem> items = _context.MonitorItems;
+
+            if (Request.QueryString.HasValue)
             {
-                // gets all records
-                var item = _context.MonitorItems.ToList();
-                return new ObjectResult(item);
-            }
-            else
-            {
-                // example of query on ClientID and Type
-                using (_context)
+                // set limit on number of records to return
+                if (int.TryParse(Records, out int irecords))
+                    if (irecords > 0) records = irecords;
+
+                // how many days back to look
+                if (int.TryParse(Days, out int idays))
                 {
-                    var item = (from cid in _context.MonitorItems
-                                where cid.ClientID.Equals(ClientID)
-                                select cid)
-                               .Intersect
-                               (from type in _context.MonitorItems
-                                where type.Type.Equals(Type)
-                                select type);
-
-                    return new ObjectResult(item.ToList());
+                    DateTime fromdate = DateTime.Now.AddDays(-idays);
+                    items = from item in _context.MonitorItems
+                            where (item.Date >= fromdate)
+                            select item;
                 }
+
+                // specific ClientID
+                if (!string.IsNullOrWhiteSpace(ClientID))
+                    items = items.Intersect
+                             (from item in _context.MonitorItems
+                             where item.ClientID.Equals(ClientID)
+                             select item);
+
+                // Specific Type
+                if (!string.IsNullOrWhiteSpace(Type))
+                    items = items.Intersect
+                            (from item in _context.MonitorItems
+                            where item.Type.Equals(Type)
+                            select item);
+
+                // Memo contains
+                if (!string.IsNullOrWhiteSpace(Memo))
+                    items = items.Intersect
+                            (from item in _context.MonitorItems
+                             where item.Memo.Contains(Memo)
+                             select item);
             }
+
+            // sort the records in descending order
+            items = items.OrderByDescending(item => item.Date).ThenByDescending(item => item.Time);
+            items = items.Take(records);  // how many records to take
+
+            // this is where the query actually executes
+            return new ObjectResult(items.ToList());
+               
         }
+
+
+
         /// <summary>
         /// Checks for valid request, then records the new monitor item
         /// </summary>
@@ -151,10 +189,6 @@ namespace ohsmon.Controllers
             {
                 if (monitorItem.IsValid())
                 {
-                    // * log to flat CSV file *
-                    // FileDataStor fds = new FileDataStor(@"c:\temp\mondata.log");  //TODO hard coded filename for testing
-                    // fds.AppendData(monitorItem.ToCSV());
-                    // * log to database
                     _context.MonitorItems.Add(monitorItem);
                     _context.SaveChanges();
 

@@ -4,7 +4,7 @@ API
 
 To create a new monitor entry via HTTP GET  (URL not yet defined)
 
-	https://ohsmon.orasi.com/api/mon/V1?id=Client1&Type=ALM&ResponseTime=400&Memo=test
+	https://ohsmon.orasi.com/api/mon/V1/record?clientid=Client1&type=ALM&responsetime=400&memo=test
 
 To create a new monitor entry via HTTP POST
 
@@ -23,9 +23,28 @@ To create a new monitor entry via HTTP POST
 	
 	}
 
+
 To retrieve data using HTTP GET  (not yet implemented)
 
-	https://ohsmon.orasi.com/api/data/V1?id=<clientID>&Type=<type>
+	Get all data for ClientID and Type
+		https://ohsmon.orasi.com/api/mon/V1?clientid=<clientID>&Type=<type>
+
+	Get all data for ClientID
+		https://ohsmon.orasi.com/api/mon/V1?clientid=<clientID>
+
+	Limit data to past n days
+		add &days=<n>
+
+	Limit data to last i records
+		add &records=<i>
+
+
+	
+
+
+
+
+
 
 http://container-solutions.com/argument-rest-microservices/
 
