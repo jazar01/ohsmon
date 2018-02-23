@@ -72,6 +72,7 @@ namespace ohsmon.Controllers
         /// <param name="ResponseTime">milliseconds</param>
         /// <param name="Memo"></param>
         /// <returns></returns>
+        // sample url to record data using get request
         // http://localhost:60695/api/mon/V1/record?clientid=Client1&Type=ALM&ResponseTime=400&Memo=test%20data
         [HttpGet("{version}/record")]
         public IActionResult RecMonData(string version,
