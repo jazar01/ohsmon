@@ -6,10 +6,13 @@ using System.IO;
 
 namespace ohsmon
 {
-    public class DataRecorder
+    /// <summary>
+    /// Records monitor events to a flat file
+    /// </summary>
+    public class FileDataStor
     {
         private string _filename;
-        public DataRecorder(string filename)
+        public FileDataStor(string filename)
         {
             _filename = filename;
         }

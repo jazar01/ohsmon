@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,15 @@ namespace ohsmon.Models
     /// </summary>
     public class MonitorItem
     {
-        [Required]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int RecordID { get; set; }
         public string ClientID { get; set; }
-        public string Date { get; }
-        public string Time { get;  }
+        [Column(TypeName="Date")]
+        public DateTime Date { get; set; }
+        public TimeSpan Time { get; set; }
         public string Type { get; set; }
-        public string ResponseTime { get; set; }
+        public uint ResponseTime { get; set; }
         public string Memo { get; set; }
 
         private string _msg;
@@ -29,19 +33,19 @@ namespace ohsmon.Models
         /// </summary>
         public MonitorItem()
         {
-            Date = DateTime.Now.ToShortDateString();
-            Time = DateTime.Now.ToString("T",CultureInfo.CreateSpecificCulture("es-ES"));
+            Date = DateTime.Now.Date;
+            Time = DateTime.Now.TimeOfDay;
             _msg = "";
         }
 
         public override string ToString()
         {
-            return String.Format("ClientID={0}, Date={1}, Time={2}, Type={3}, ResponseTime={4}, Memo={5}",
+            return String.Format("ClientID={0}, Date={1:yyyy-MM-dd}, Time={2:hh\\:mm\\:ss}, Type={3}, ResponseTime={4}, Memo={5}",
                 ClientID, Date, Time, Type, ResponseTime, Memo);
         }
         public string ToCSV()
         {
-            return String.Format("{0},{1},{2},{3},{4},\"{5}\"",
+            return String.Format("{0},{1:yyyy-MM-dd},{2:hh\\:mm\\:ss},{3},{4},\"{5}\"",
                 ClientID, Date, Time, Type, ResponseTime, Memo);
         }
 
@@ -63,13 +67,7 @@ namespace ohsmon.Models
                 _msg += "Type not valid   ";
                 valid = false;
             }
-
-            if (!long.TryParse(ResponseTime, out long rtime))
-                {
-                _msg += "Response time not valid   ";
-                valid = false;
-            }
-            else if (rtime < 1 || rtime > 600000)  // ten minute limit
+            else if (ResponseTime < 1 || ResponseTime > 600000)  // ten minute limit
             {
                 _msg += "Response time out of range   ";
                 valid = false;
@@ -86,7 +84,7 @@ namespace ohsmon.Models
         /// call this after IsValid if false to get error message
         /// </summary>
         /// <returns>message</returns>
-        public string getMsg()
+        public string GetMsg()
         {
             return _msg;
         }
