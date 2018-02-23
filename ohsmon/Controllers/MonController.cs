@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ohsmon.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+// helpful links
+// https://go.microsoft.com/fwlink/?LinkID=397860
 // https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api
 // https://www.sourceallies.com/2016/12/build-a-restful-service-with-dotnet-core/
 // https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing
@@ -20,7 +21,7 @@ namespace ohsmon.Controllers
         {
             _context = context;
 
-            if (_context.MonitorItems.Count()==0)
+            if (_context.MonitorItems.Count() == 0)
             {
                 _context.MonitorItems.Add(new MonitorItem { ClientID = "INIT ENTRY" });
                 _context.SaveChanges();
@@ -32,26 +33,26 @@ namespace ohsmon.Controllers
         // Note: monitor items can be submitted via GET or POST
 
 
-    /// <summary>
-    /// HTTP Post request to create a monitor item and record it
-    ///     Data must be in body of request 
-    ///     
-    ///     example ( ClientID and ResponseTime are required)
-    ///     
-    ///    	{
-	///     "ClientID":"Client1",
-    ///     "Type":"ALM",
-	///     "ResponseTime":210,
-	///     "Memo":"Test memo data"
-	///     }
-    /// </summary>
-    /// <param name="version"></param>
-    /// <param name="monitorItem"></param>
-    /// <returns></returns>
-    [HttpPost("{version}")]
+        /// <summary>
+        /// HTTP Post request to create a monitor item and record it
+        ///     Data must be in body of request 
+        ///     
+        ///     example ( ClientID and ResponseTime are required)
+        ///     
+        ///    	{
+        ///     "ClientID":"Client1",
+        ///     "Type":"ALM",
+        ///     "ResponseTime":210,
+        ///     "Memo":"Test memo data"
+        ///     }
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="monitorItem"></param>
+        /// <returns></returns>
+        [HttpPost("{version}")]
         public IActionResult Create(string version, [FromBody] MonitorItem monitorItem)
         {
-            return RecordMonitorItem(version, monitorItem);   
+            return RecordMonitorItem(version, monitorItem);
         }
 
 
@@ -90,7 +91,7 @@ namespace ohsmon.Controllers
             else
             {
                 throw (new ArgumentException("Reponse time must be a positive number of milliseconds", "ResponseTime"));
-            }   
+            }
         }
 
 
@@ -101,7 +102,7 @@ namespace ohsmon.Controllers
         {
             IQueryable<MonitorItem> items = _context.MonitorItems;
             items = items.OrderByDescending(item => item.Date).ThenByDescending(item => item.Time);
-            items = items.Take(100); 
+            items = items.Take(100);
             return new ObjectResult(items.ToList());
         }
 
@@ -148,15 +149,15 @@ namespace ohsmon.Controllers
                 if (!string.IsNullOrWhiteSpace(ClientID))
                     items = items.Intersect
                              (from item in _context.MonitorItems
-                             where item.ClientID.Equals(ClientID)
-                             select item);
+                              where item.ClientID.Equals(ClientID)
+                              select item);
 
                 // Specific Type
                 if (!string.IsNullOrWhiteSpace(Type))
                     items = items.Intersect
                             (from item in _context.MonitorItems
-                            where item.Type.Equals(Type)
-                            select item);
+                             where item.Type.Equals(Type)
+                             select item);
 
                 // Memo contains
                 if (!string.IsNullOrWhiteSpace(Memo))
@@ -172,7 +173,7 @@ namespace ohsmon.Controllers
 
             // this is where the query actually executes
             return new ObjectResult(items.ToList());
-               
+
         }
 
 
@@ -202,6 +203,6 @@ namespace ohsmon.Controllers
             else
                 return new ObjectResult("ERROR - Version not supported");
         }
-      
+
     }
 }
