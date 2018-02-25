@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  ohsmon:
+    image: ohsmon
+    build:
+      context: .
+      dockerfile: ohsmon/Dockerfile
