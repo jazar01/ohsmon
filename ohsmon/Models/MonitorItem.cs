@@ -19,7 +19,7 @@ namespace ohsmon.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RecordID { get; set; }
         public string ClientID { get; set; }
-        [Column(TypeName="Date")]
+        [Column(TypeName="Date") ]
         public DateTime Date { get; set; }
         public TimeSpan Time { get; set; }
         public string Type { get; set; }
