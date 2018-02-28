@@ -20,11 +20,18 @@ CREATE DATABASE ohsmonitor
     WITH 
     OWNER = monroot
     ENCODING = 'UTF8'
-    LC_COLLATE = 'English_United States.1252'
-    LC_CTYPE = 'English_United States.1252'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
-\c xohsmonitor
+\c ohsmonitor
+CREATE SEQUENCE public."MonitorItems_RecordID_seq"
+    INCREMENT 1
+    START 17
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE public."MonitorItems_RecordID_seq"
+    OWNER TO monroot;
 CREATE TABLE public."MonitorItems"
 (
     "RecordID" integer NOT NULL DEFAULT nextval('"MonitorItems_RecordID_seq"'::regclass),
